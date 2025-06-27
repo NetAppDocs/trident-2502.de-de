@@ -1,0 +1,472 @@
+---
+sidebar: sidebar 
+permalink: trident-use/anf-examples.html 
+keywords: trident backend, azure netapp files, smb volumes, smb, windows 
+summary: Informieren Sie sich über die Backend-Konfigurationsoptionen NFS und SMB für Azure NetApp Files und sehen Sie sich Konfigurationsbeispiele an. 
+---
+= Azure NetApp Files Back-End-Konfigurationsoptionen und -Beispiele
+:hardbreaks:
+:allow-uri-read: 
+:icons: font
+:imagesdir: ../media/
+
+
+[role="lead"]
+Informieren Sie sich über die Backend-Konfigurationsoptionen NFS und SMB für Azure NetApp Files und sehen Sie sich Konfigurationsbeispiele an.
+
+
+
+== Back-End-Konfigurationsoptionen
+
+Trident erstellt mithilfe Ihrer Backend-Konfiguration (Subnetz, virtuelles Netzwerk, Service Level und Standort) Azure NetApp Files Volumes in Kapazitätspools, die am angeforderten Standort verfügbar sind und mit dem angeforderten Service-Level und Subnetz übereinstimmen.
+
+
+NOTE: Trident unterstützt keine manuellen QoS-Kapazitätspools.
+
+Azure NetApp Files Back-Ends bieten diese Konfigurationsoptionen.
+
+[cols="3"]
+|===
+| Parameter | Beschreibung | Standard 
+
+
+| `version` |  | Immer 1 
+
+
+| `storageDriverName` | Name des Speichertreibers | „azure-netapp-Files“ 
+
+
+| `backendName` | Benutzerdefinierter Name oder das Storage-Backend | Treibername + „_“ + zufällige Zeichen 
+
+
+| `subscriptionID` | Die Abonnement-ID Ihres Azure-Abonnements Optional, wenn verwaltete Identitäten auf einem AKS-Cluster aktiviert sind. |  
+
+
+| `tenantID` | Die Mandanten-ID einer App-Registrierung Optional, wenn verwaltete Identitäten oder Cloud-Identität auf einem AKS-Cluster verwendet wird. |  
+
+
+| `clientID` | Die Client-ID einer App-Registrierung Optional, wenn verwaltete Identitäten oder Cloud-Identität auf einem AKS-Cluster verwendet wird. |  
+
+
+| `clientSecret` | Der Client-Schlüssel aus einer App-Registrierung Optional, wenn verwaltete Identitäten oder Cloud-Identität auf einem AKS-Cluster verwendet wird. |  
+
+
+| `serviceLevel` | Einer von `Standard`, , `Premium` oder `Ultra` | „“ (zufällig) 
+
+
+| `location` | Name des Azure-Standorts, an dem die neuen Volumes erstellt werden Optional, wenn verwaltete Identitäten auf einem AKS-Cluster aktiviert sind |  
+
+
+| `resourceGroups` | Liste der Ressourcengruppen zum Filtern ermittelter Ressourcen | „[]“ (kein Filter) 
+
+
+| `netappAccounts` | Liste von NetApp Accounts zur Filterung erkannter Ressourcen | „[]“ (kein Filter) 
+
+
+| `capacityPools` | Liste der Kapazitäts-Pools zur Filterung erkannter Ressourcen | „[]“ (kein Filter, zufällig) 
+
+
+| `virtualNetwork` | Name eines virtuellen Netzwerks mit einem delegierten Subnetz | „“ 
+
+
+| `subnet` | Name eines Subnetzes, an das delegiert wurde `Microsoft.Netapp/volumes` | „“ 
+
+
+| `networkFeatures` | Satz von vnet-Features für ein Volume, kann oder `Standard` sein `Basic`. Netzwerkfunktionen sind nicht in allen Regionen verfügbar und müssen möglicherweise in einem Abonnement aktiviert werden. Wenn die  `networkFeatures`Funktion nicht aktiviert ist, schlägt die Volume-Bereitstellung fehl. | „“ 
+
+
+| `nfsMountOptions` | Engmaschige Kontrolle der NFS-Mount-Optionen Für SMB Volumes ignoriert. Um Volumes mit NFS-Version 4.1 zu mounten, fügen Sie  in die Liste mit kommagetrennten Mount-Optionen ein `nfsvers=4`, um NFS v4.1 auszuwählen. Mount-Optionen, die in einer Storage-Klassen-Definition festgelegt sind, überschreiben Mount-Optionen, die in der Backend-Konfiguration festgelegt sind. | „Nfsvers=3“ 
+
+
+| `limitVolumeSize` | Bereitstellung fehlgeschlagen, wenn die angeforderte Volume-Größe über diesem Wert liegt | „“ (nicht standardmäßig durchgesetzt) 
+
+
+| `debugTraceFlags` | Fehler-Flags bei der Fehlerbehebung beheben. Beispiel, `\{"api": false, "method": true, "discovery": true}`. Verwenden Sie dies nur, wenn Sie Fehler beheben und einen detaillierten Log Dump benötigen. | Null 
+
+
+| `nasType` | Konfiguration der Erstellung von NFS- oder SMB-Volumes Optionen sind `nfs`, `smb` oder Null. Einstellung auf null setzt standardmäßig auf NFS-Volumes. | `nfs` 
+
+
+| `supportedTopologies` | Stellt eine Liste von Regionen und Zonen dar, die von diesem Backend unterstützt werden. Weitere Informationen finden Sie unter link:../trident-use/csi-topology.html["Verwenden Sie die CSI-Topologie"]. |  
+|===
+
+NOTE: Weitere Informationen zu Netzwerkfunktionen finden Sie unter link:https://docs.microsoft.com/en-us/azure/azure-netapp-files/configure-network-features["Konfigurieren Sie Netzwerkfunktionen für ein Azure NetApp Files Volume"^].
+
+
+
+=== Erforderliche Berechtigungen und Ressourcen
+
+Wenn Sie beim Erstellen einer PVC den Fehler „Keine Kapazitätspools gefunden“ erhalten, ist es wahrscheinlich, dass Ihre App-Registrierung nicht über die erforderlichen Berechtigungen und Ressourcen (Subnetz, virtuelles Netzwerk, Kapazitätspool) verfügt. Wenn Debug aktiviert ist, protokolliert Trident die beim Erstellen des Backends erkannten Azure-Ressourcen. Überprüfen Sie, ob eine geeignete Rolle verwendet wird.
+
+Die Werte für `resourceGroups`, , , `netappAccounts` `capacityPools` , `virtualNetwork` und `subnet` können mit kurzen oder vollqualifizierten Namen angegeben werden. In den meisten Fällen werden vollqualifizierte Namen empfohlen, da kurze Namen mehrere Ressourcen mit demselben Namen entsprechen können.
+
+Die `resourceGroups` Werte , `netappAccounts` und `capacityPools` sind Filter, die die ermittelten Ressourcen auf die Ressourcen beschränken, die für dieses Speicher-Backend verfügbar sind und in jeder Kombination angegeben werden können. Vollqualifizierte Namen folgen diesem Format:
+
+[cols="2"]
+|===
+| Typ | Formatieren 
+
+
+| Ressourcengruppe | <Ressourcengruppe> 
+
+
+| NetApp Konto | <Resource Group>/<netapp Account> 
+
+
+| Kapazitäts-Pool | <Resource Group>/<netapp Account>/<Capacity Pool> 
+
+
+| Virtuelles Netzwerk | <Ressourcengruppe>/<virtuelles Netzwerk> 
+
+
+| Subnetz | <Ressourcengruppe>/<virtuelles Netzwerk>/<Subnetz> 
+|===
+
+
+=== Volume-Provisionierung
+
+Sie können die standardmäßige Volume-Bereitstellung steuern, indem Sie die folgenden Optionen in einem speziellen Abschnitt der Konfigurationsdatei angeben. Weitere Informationen finden Sie unter <<Beispielkonfigurationen>> .
+
+[cols=",,"]
+|===
+| Parameter | Beschreibung | Standard 
+
+
+| `exportRule` | Exportregeln für neue Volumes 
+`exportRule` Muss eine kommagetrennte Liste einer beliebigen Kombination von IPv4-Adressen oder IPv4-Subnetzen in CIDR-Notation sein. Für SMB Volumes ignoriert. | „0.0.0.0/0“ 
+
+
+| `snapshotDir` | Steuert die Sichtbarkeit des .Snapshot-Verzeichnisses | „Wahr“ für NFSv4 „falsch“ für NFSv3 
+
+
+| `size` | Die Standardgröße der neuen Volumes | „100G“ 
+
+
+| `unixPermissions` | die unix-Berechtigungen neuer Volumes (4 Oktal-Ziffern). Für SMB Volumes ignoriert. | „“ (Vorschau-Funktion, erfordert Whitelisting im Abonnement) 
+|===
+
+
+== Beispielkonfigurationen
+
+Die folgenden Beispiele zeigen grundlegende Konfigurationen, bei denen die meisten Parameter standardmäßig belassen werden. Dies ist der einfachste Weg, ein Backend zu definieren.
+
+.Minimalkonfiguration
+[%collapsible]
+====
+Dies ist die absolute minimale Backend-Konfiguration. Mit dieser Konfiguration erkennt Trident alle NetApp-Konten, Kapazitätspools und an Azure NetApp Files delegierte Subnetze am konfigurierten Standort und platziert neue Volumes zufällig in einem dieser Pools und Subnetze. Da `nasType` nicht angegeben ist, gilt der `nfs` Standard und das Backend wird für NFS Volumes bereitgestellt.
+
+Diese Konfiguration ist ideal, wenn Sie gerade erst mit Azure NetApp Files beginnen und Dinge ausprobieren möchten, aber in der Praxis möchten Sie einen zusätzlichen Umfang für die bereitgestellten Volumes angeben.
+
+[source, yaml]
+----
+---
+apiVersion: trident.netapp.io/v1
+kind: TridentBackendConfig
+metadata:
+  name: backend-tbc-anf-1
+  namespace: trident
+spec:
+  version: 1
+  storageDriverName: azure-netapp-files
+  subscriptionID: 9f87c765-4774-fake-ae98-a721add45451
+  tenantID: 68e4f836-edc1-fake-bff9-b2d865ee56cf
+  clientID: dd043f63-bf8e-fake-8076-8de91e5713aa
+  clientSecret: SECRET
+  location: eastus
+----
+====
+.Verwaltete Identitäten für AKS
+[%collapsible]
+====
+Diese Backend-Konfiguration unterlässt `subscriptionID`, `tenantID`, `clientID` und `clientSecret`, die bei der Verwendung von verwalteten Identitäten optional sind.
+
+[source, yaml]
+----
+apiVersion: trident.netapp.io/v1
+kind: TridentBackendConfig
+metadata:
+  name: backend-tbc-anf-1
+  namespace: trident
+spec:
+  version: 1
+  storageDriverName: azure-netapp-files
+  capacityPools:
+    - ultra-pool
+  resourceGroups:
+    - aks-ami-eastus-rg
+  netappAccounts:
+    - smb-na
+  virtualNetwork: eastus-prod-vnet
+  subnet: eastus-anf-subnet
+----
+====
+.Cloud-Identität für AKS
+[%collapsible]
+====
+Diese Backend-Konfiguration unterlässt `tenantID`, `clientID` und `clientSecret`, die optional sind, wenn Sie eine Cloud-Identität verwenden.
+
+[source, yaml]
+----
+apiVersion: trident.netapp.io/v1
+kind: TridentBackendConfig
+metadata:
+  name: backend-tbc-anf-1
+  namespace: trident
+spec:
+  version: 1
+  storageDriverName: azure-netapp-files
+  capacityPools:
+    - ultra-pool
+  resourceGroups:
+    - aks-ami-eastus-rg
+  netappAccounts:
+    - smb-na
+  virtualNetwork: eastus-prod-vnet
+  subnet: eastus-anf-subnet
+  location: eastus
+  subscriptionID: 9f87c765-4774-fake-ae98-a721add45451
+----
+====
+.Spezifische Service-Level-Konfiguration mit Filtern nach Kapazitäts-Pools
+[%collapsible]
+====
+Diese Backend-Konfiguration platziert Volumes an Azure `eastus` in einem `Ultra` Kapazitäts-Pool. Trident erkennt automatisch alle an Azure NetApp Files delegierten Subnetze an diesem Standort und platziert ein neues Volume zufällig in einem davon.
+
+[source, yaml]
+----
+---
+version: 1
+storageDriverName: azure-netapp-files
+subscriptionID: 9f87c765-4774-fake-ae98-a721add45451
+tenantID: 68e4f836-edc1-fake-bff9-b2d865ee56cf
+clientID: dd043f63-bf8e-fake-8076-8de91e5713aa
+clientSecret: SECRET
+location: eastus
+serviceLevel: Ultra
+capacityPools:
+  - application-group-1/account-1/ultra-1
+  - application-group-1/account-1/ultra-2
+----
+====
+.Erweiterte Konfiguration
+[%collapsible]
+====
+Diese Back-End-Konfiguration reduziert den Umfang der Volume-Platzierung auf ein einzelnes Subnetz und ändert auch einige Standardwerte für die Volume-Bereitstellung.
+
+[source, yaml]
+----
+---
+version: 1
+storageDriverName: azure-netapp-files
+subscriptionID: 9f87c765-4774-fake-ae98-a721add45451
+tenantID: 68e4f836-edc1-fake-bff9-b2d865ee56cf
+clientID: dd043f63-bf8e-fake-8076-8de91e5713aa
+clientSecret: SECRET
+location: eastus
+serviceLevel: Ultra
+capacityPools:
+  - application-group-1/account-1/ultra-1
+  - application-group-1/account-1/ultra-2
+virtualNetwork: my-virtual-network
+subnet: my-subnet
+networkFeatures: Standard
+nfsMountOptions: vers=3,proto=tcp,timeo=600
+limitVolumeSize: 500Gi
+defaults:
+  exportRule: 10.0.0.0/24,10.0.1.0/24,10.0.2.100
+  snapshotDir: "true"
+  size: 200Gi
+  unixPermissions: "0777"
+
+----
+====
+.Konfiguration des virtuellen Pools
+[%collapsible]
+====
+Diese Back-End-Konfiguration definiert mehrere Storage-Pools in einer einzelnen Datei. Dies ist nützlich, wenn Sie über mehrere Kapazitäts-Pools verfügen, die unterschiedliche Service-Level unterstützen, und Sie Storage-Klassen in Kubernetes erstellen möchten, die diese unterstützen. Virtuelle Pool-Etiketten wurden verwendet, um die Pools anhandzu differenzieren `performance`.
+
+[source, yaml]
+----
+---
+version: 1
+storageDriverName: azure-netapp-files
+subscriptionID: 9f87c765-4774-fake-ae98-a721add45451
+tenantID: 68e4f836-edc1-fake-bff9-b2d865ee56cf
+clientID: dd043f63-bf8e-fake-8076-8de91e5713aa
+clientSecret: SECRET
+location: eastus
+resourceGroups:
+  - application-group-1
+networkFeatures: Basic
+nfsMountOptions: vers=3,proto=tcp,timeo=600
+labels:
+  cloud: azure
+storage:
+  - labels:
+      performance: gold
+    serviceLevel: Ultra
+    capacityPools:
+      - ultra-1
+      - ultra-2
+    networkFeatures: Standard
+  - labels:
+      performance: silver
+    serviceLevel: Premium
+    capacityPools:
+      - premium-1
+  - labels:
+      performance: bronze
+    serviceLevel: Standard
+    capacityPools:
+      - standard-1
+      - standard-2
+
+----
+====
+.Konfiguration unterstützter Topologien
+[%collapsible]
+====
+Trident erleichtert die Bereitstellung von Volumes für Workloads, basierend auf Regionen und Verfügbarkeitszonen. Der `supportedTopologies` Block in dieser Backend-Konfiguration dient zur Bereitstellung einer Liste von Regionen und Zonen pro Backend. Die hier angegebenen Region- und Zonenwerte müssen mit den Region- und Zonenwerten der Beschriftungen auf jedem Kubernetes-Cluster-Node übereinstimmen. Diese Regionen und Zonen stellen die Liste der zulässigen Werte dar, die in einer Lagerklasse bereitgestellt werden können. Für Storage-Klassen, die eine Teilmenge der Regionen und Zonen enthalten, die in einem Back-End bereitgestellt werden, erstellt Trident Volumes in der genannten Region und Zone. Weitere Informationen finden Sie unter link:../trident-use/csi-topology.html["Verwenden Sie die CSI-Topologie"].
+
+[source, yaml]
+----
+---
+version: 1
+storageDriverName: azure-netapp-files
+subscriptionID: 9f87c765-4774-fake-ae98-a721add45451
+tenantID: 68e4f836-edc1-fake-bff9-b2d865ee56cf
+clientID: dd043f63-bf8e-fake-8076-8de91e5713aa
+clientSecret: SECRET
+location: eastus
+serviceLevel: Ultra
+capacityPools:
+  - application-group-1/account-1/ultra-1
+  - application-group-1/account-1/ultra-2
+supportedTopologies:
+  - topology.kubernetes.io/region: eastus
+    topology.kubernetes.io/zone: eastus-1
+  - topology.kubernetes.io/region: eastus
+    topology.kubernetes.io/zone: eastus-2
+----
+====
+
+
+== Definitionen der Storage-Klassen
+
+Die folgenden `StorageClass` Definitionen beziehen sich auf die Speicherpools oben.
+
+
+
+=== Beispieldefinitionen mit `parameter.selector` Feld
+
+Mit `parameter.selector` können Sie für jeden virtuellen Pool angeben `StorageClass`, der zum Hosten eines Volumes verwendet wird. Im Volume werden die Aspekte definiert, die im ausgewählten Pool definiert sind.
+
+[source, yaml]
+----
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: gold
+provisioner: csi.trident.netapp.io
+parameters:
+  selector: performance=gold
+allowVolumeExpansion: true
+
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: silver
+provisioner: csi.trident.netapp.io
+parameters:
+  selector: performance=silver
+allowVolumeExpansion: true
+
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: bronze
+provisioner: csi.trident.netapp.io
+parameters:
+  selector: performance=bronze
+allowVolumeExpansion: true
+----
+
+
+=== Beispieldefinitionen für SMB Volumes
+
+Mit `nasType`, `node-stage-secret-name` und  `node-stage-secret-namespace`können Sie ein SMB-Volume angeben und die erforderlichen Active Directory-Anmeldeinformationen eingeben.
+
+.Grundkonfiguration im Standard-Namespace
+[%collapsible]
+====
+[source, yaml]
+----
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: anf-sc-smb
+provisioner: csi.trident.netapp.io
+parameters:
+  backendType: "azure-netapp-files"
+  trident.netapp.io/nasType: "smb"
+  csi.storage.k8s.io/node-stage-secret-name: "smbcreds"
+  csi.storage.k8s.io/node-stage-secret-namespace: "default"
+----
+====
+.Verschiedene Schlüssel pro Namespace verwenden
+[%collapsible]
+====
+[source, yaml]
+----
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: anf-sc-smb
+provisioner: csi.trident.netapp.io
+parameters:
+  backendType: "azure-netapp-files"
+  trident.netapp.io/nasType: "smb"
+  csi.storage.k8s.io/node-stage-secret-name: "smbcreds"
+  csi.storage.k8s.io/node-stage-secret-namespace: ${pvc.namespace}
+----
+====
+.Verschiedene Geheimnisse pro Band verwenden
+[%collapsible]
+====
+[source, yaml]
+----
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: anf-sc-smb
+provisioner: csi.trident.netapp.io
+parameters:
+  backendType: "azure-netapp-files"
+  trident.netapp.io/nasType: "smb"
+  csi.storage.k8s.io/node-stage-secret-name: ${pvc.name}
+  csi.storage.k8s.io/node-stage-secret-namespace: ${pvc.namespace}
+----
+====
+
+NOTE: `nasType: smb` Filter für Pools, die SMB Volumes unterstützen. `nasType: nfs` Oder `nasType: null` Filter für NFS-Pools.
+
+
+
+== Erstellen Sie das Backend
+
+Führen Sie nach dem Erstellen der Back-End-Konfigurationsdatei den folgenden Befehl aus:
+
+[listing]
+----
+tridentctl create backend -f <backend-file>
+----
+Wenn die Backend-Erstellung fehlschlägt, ist mit der Back-End-Konfiguration ein Fehler aufgetreten. Sie können die Protokolle zur Bestimmung der Ursache anzeigen, indem Sie den folgenden Befehl ausführen:
+
+[listing]
+----
+tridentctl logs
+----
+Nachdem Sie das Problem mit der Konfigurationsdatei identifiziert und korrigiert haben, können Sie den Befehl „Erstellen“ erneut ausführen.

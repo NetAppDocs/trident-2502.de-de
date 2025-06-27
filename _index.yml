@@ -1,0 +1,64 @@
+---
+indexpage:
+  lead: Trident ist ein Open-Source-Tool zur Storage-bereitstellung und -Orchestrierung,
+    das von NetApp verwaltet wird. Die Software ermöglicht die Erstellung von Storage
+    Volumes für Container-Applikationen, die von Docker und Kubernetes gemanagt werden.
+  tiles:
+  - title: Versionshinweise
+    links:
+    - title: Was ist neu
+      url: trident-rn.html
+    - title: Frühere Versionen
+      url: "/earlier-versions.html"
+  - title: Los geht's
+    links:
+    - title: Erfahren Sie mehr über Trident
+      url: "/trident-get-started/intro.html"
+    - title: Anforderungen
+      url: "/trident-get-started/requirements.html"
+    - title: Schnellstart
+      url: "/trident-get-started/quickstart.html"
+  - title: Implementieren Sie Trident
+    links:
+    - title: Implementierung mit dem Trident Operator
+      url: "/trident-get-started/kubernetes-deploy-operator.html"
+    - title: Implementierung mit tridentctl
+      url: "/trident-get-started/kubernetes-deploy-tridentctl.html"
+    - title: Implementierung von Trident für Docker
+      url: "/trident-docker/deploy-docker.html"
+  - title: Upgrade von Trident
+    links:
+    - title: Upgrade mit Trident Operator
+      url: "/trident-managing-k8s/upgrade-operator.html"
+    - title: Upgrade mit tridentctl
+      url: "/trident-managing-k8s/upgrade-tridentctl.html"
+  - title: Verwenden Sie Trident
+    links:
+    - title: Bereiten Sie den Knoten „Worker“ vor
+      url: "/trident-use/worker-node-prep.html"
+    - title: Back-Ends konfigurieren
+      url: "/trident-use/backends.html"
+    - title: Management von Storage-Klassen
+      url: "/trident-use/manage-stor-class.html"
+    - title: Durchführung von Volume-Vorgängen
+      url: "/trident-use/vol-operations.html"
+  - title: Erweitertes Datenmanagement und Datensicherung
+    links:
+    - title: Erweiterte Datensicherung mit Trident Protect
+      url: "/trident-protect/learn-about-trident-protect.html"
+    - title: Implementieren Sie Trident Protect
+      url: "/trident-protect/trident-protect-installation.html"
+    - title: Upgrade von Trident Protect
+      url: "/trident-protect/trident-protect-upgrade.html"
+  - title: Demos und Lernprogramme
+    links:
+    - title: Trident-Videos
+      url: https://media.netapp.com/video-detail/c5bebae0-aab6-5fed-ae16-df6a3a8b260d/netapp-trident-advanced-data-protection-for-kubernetes-applications
+  - title: Blogs und Community
+    links:
+    - title: Trident und Trident schützen Blogs
+      url: "/blog-posts.html"
+    - title: NetApp.io
+      url: https://netapp.io/
+    - title: Abschnur
+      url: https://discord.gg/NetApp

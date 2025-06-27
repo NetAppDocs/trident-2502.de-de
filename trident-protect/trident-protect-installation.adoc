@@ -1,0 +1,148 @@
+---
+sidebar: sidebar 
+permalink: trident-protect/trident-protect-installation.html 
+keywords: install, trident, protect, requirements, registry 
+summary: Wenn Ihre Umgebung die Anforderungen erfüllt, können Sie die folgenden Schritte ausführen, um Trident Protect zu installieren. 
+---
+= Installieren und konfigurieren Sie Trident Protect
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Wenn Ihre Umgebung die Anforderungen für Trident Protect erfüllt, können Sie mit den folgenden Schritten Trident Protect auf Ihrem Cluster installieren. Sie können Trident Protect von NetApp beziehen oder es von Ihrer eigenen privaten Registrierung installieren. Die Installation von einer privaten Registrierung ist hilfreich, wenn Ihr Cluster nicht auf das Internet zugreifen kann.
+
+
+
+== Installieren Sie Trident Protect
+
+[role="tabbed-block"]
+====
+.Installieren Sie Trident Protect von NetApp
+--
+.Schritte
+. Trident Helm Repository hinzufügen:
++
+[source, console]
+----
+helm repo add netapp-trident-protect https://netapp.github.io/trident-protect-helm-chart
+----
+. Installieren Sie die Trident Protect CRDs:
++
+[source, console]
+----
+helm install trident-protect-crds netapp-trident-protect/trident-protect-crds --version 100.2502.0 --create-namespace --namespace trident-protect
+----
+. Verwenden Sie Helm, um Trident Protect zu installieren. Ersetzen Sie `<name-of-cluster>` ihn durch einen Cluster-Namen, der dem Cluster zugewiesen wird und zum Identifizieren der Backups und Snapshots des Clusters verwendet wird:
++
+[source, console]
+----
+helm install trident-protect netapp-trident-protect/trident-protect --set clusterName=<name-of-cluster> --version 100.2502.0 --create-namespace --namespace trident-protect
+----
+
+
+--
+.Installieren Sie Trident Protect aus einer privaten Registrierung
+--
+Sie können Trident Protect aus einer privaten Image-Registrierung installieren, wenn Ihr Kubernetes-Cluster nicht auf das Internet zugreifen kann. Ersetzen Sie in diesen Beispielen Werte in Klammern durch Informationen aus Ihrer Umgebung:
+
+.Schritte
+. Ziehen Sie die folgenden Bilder auf Ihren lokalen Computer, aktualisieren Sie die Tags und schieben Sie sie dann in Ihre private Registrierung:
++
+[source, console]
+----
+netapp/controller:25.02.0
+netapp/restic:25.02.0
+netapp/kopia:25.02.0
+netapp/trident-autosupport:25.02.0
+netapp/exechook:25.02.0
+netapp/resourcebackup:25.02.0
+netapp/resourcerestore:25.02.0
+netapp/resourcedelete:25.02.0
+bitnami/kubectl:1.30.2
+kubebuilder/kube-rbac-proxy:v0.16.0
+----
++
+Beispiel:
+
++
+[source, console]
+----
+docker pull netapp/controller:25.02.0
+----
++
+[source, console]
+----
+docker tag netapp/controller:25.02.0 <private-registry-url>/controller:25.02.0
+----
++
+[source, console]
+----
+docker push <private-registry-url>/controller:25.02.0
+----
+. Trident Protect System Namespace erstellen:
++
+[source, console]
+----
+kubectl create ns trident-protect
+----
+. Melden Sie sich bei der Registrierung an:
++
+[source, console]
+----
+helm registry login <private-registry-url> -u <account-id> -p <api-token>
+----
+. Erstellen Sie einen Pull-Schlüssel, der für die Authentifizierung der privaten Registrierung verwendet werden soll:
++
+[source, console]
+----
+kubectl create secret docker-registry regcred --docker-username=<registry-username> --docker-password=<api-token> -n trident-protect --docker-server=<private-registry-url>
+----
+. Trident Helm Repository hinzufügen:
++
+[source, console]
+----
+helm repo add netapp-trident-protect https://netapp.github.io/trident-protect-helm-chart
+----
+. Erstellen Sie eine Datei mit dem Namen `protectValues.yaml`. Stellen Sie sicher, dass es die folgenden Trident Protect-Einstellungen enthält:
++
+[source, yaml]
+----
+---
+image:
+  registry: <private-registry-url>
+imagePullSecrets:
+  - name: regcred
+controller:
+  image:
+    registry: <private-registry-url>
+rbacProxy:
+  image:
+    registry: <private-registry-url>
+crCleanup:
+  imagePullSecrets:
+    - name: regcred
+webhooksCleanup:
+  imagePullSecrets:
+    - name: regcred
+----
+. Installieren Sie die Trident Protect CRDs:
++
+[source, console]
+----
+helm install trident-protect-crds netapp-trident-protect/trident-protect-crds --version 100.2502.0 --create-namespace --namespace trident-protect
+----
+. Verwenden Sie Helm, um Trident Protect zu installieren. Ersetzen Sie `<name_of_cluster>` ihn durch einen Cluster-Namen, der dem Cluster zugewiesen wird und zum Identifizieren der Backups und Snapshots des Clusters verwendet wird:
++
+[source, console]
+----
+helm install trident-protect netapp-trident-protect/trident-protect --set clusterName=<name_of_cluster> --version 100.2502.0 --create-namespace --namespace trident-protect -f protectValues.yaml
+----
+
+
+--
+====

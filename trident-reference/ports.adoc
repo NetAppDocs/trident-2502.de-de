@@ -1,0 +1,40 @@
+---
+sidebar: sidebar 
+permalink: trident-reference/ports.html 
+keywords: Trident, port, ports 
+summary: Erfahren Sie mehr über die Ports, über die Trident kommuniziert. 
+---
+= Trident-Ports
+:hardbreaks:
+:allow-uri-read: 
+:icons: font
+:imagesdir: ../media/
+
+
+[role="lead"]
+Erfahren Sie mehr über die Ports, die Trident für die Kommunikation verwendet.
+
+
+
+== Trident-Ports
+
+Trident kommuniziert über folgende Ports:
+
+[cols="2,4"]
+|===
+| Port | Zweck 
+
+
+| 8443 | Backchannel HTTPS 
+
+
+| 8001 | Endpunkt der Prometheus Kennzahlen 
+
+
+| 8000 | Trident REST-Server 
+
+
+| 17546 | Anschluss für Liveness/Readiness-Sonde, der von Trident Demonset-Pods verwendet wird 
+|===
+
+NOTE: Der Anschluss für die Liveness/Readiness-Sonde kann während der Installation mit dem Flag geändert `--probe-port` werden. Es ist wichtig, sicherzustellen, dass dieser Port nicht von einem anderen Prozess auf den Worker-Knoten verwendet wird.

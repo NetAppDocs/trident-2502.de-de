@@ -1,0 +1,77 @@
+---
+sidebar: sidebar 
+permalink: trident-docker/collect-logs-docker.html 
+keywords: deploy, Trident, trident for docker, docker, logs, binary, managed plugin 
+summary: Sie können Protokolle erfassen, um Hilfe bei der Fehlerbehebung zu erhalten. Die Methode zur Erfassung der Protokolle variiert je nach Ausführung des Docker Plug-ins. 
+---
+= Sammelt Protokolle
+:hardbreaks:
+:allow-uri-read: 
+:icons: font
+:imagesdir: ../media/
+
+
+[role="lead"]
+Sie können Protokolle erfassen, um Hilfe bei der Fehlerbehebung zu erhalten. Die Methode zur Erfassung der Protokolle variiert je nach Ausführung des Docker Plug-ins.
+
+
+
+== Sammelt Protokolle für die Fehlerbehebung
+
+.Schritte
+. Wenn Sie Trident mit der empfohlenen Managed-Plugin-Methode ausführen (z. B. mit `docker plugin` Befehlen), zeigen Sie diese wie folgt an:
++
+[source, console]
+----
+docker plugin ls
+----
++
+[listing]
+----
+ID                  NAME                DESCRIPTION                          ENABLED
+4fb97d2b956b        netapp:latest       nDVP - NetApp Docker Volume Plugin   false
+journalctl -u docker | grep 4fb97d2b956b
+----
++
+Die Standardprotokollierungsebene sollte Ihnen die Diagnose der meisten Probleme ermöglichen. Wenn Sie feststellen, dass das nicht genug ist, können Sie Debug-Protokollierung aktivieren.
+
+. Um die Debug-Protokollierung zu aktivieren, installieren Sie das Plugin mit aktivierter Debug-Protokollierung:
++
+[source, console]
+----
+docker plugin install netapp/trident-plugin:<version> --alias <alias> debug=true
+----
++
+Oder aktivieren Sie Debug-Protokollierung, wenn das Plugin bereits installiert ist:
+
++
+[source, console]
+----
+docker plugin disable <plugin>
+----
++
+[source, console]
+----
+docker plugin set <plugin> debug=true
+----
++
+[source, console]
+----
+docker plugin enable <plugin>
+----
+. Wenn Sie die Binärdatei selbst auf dem Host ausführen, sind Protokolle im Verzeichnis des Hosts verfügbar `/var/log/netappdvp`. Geben Sie zum Aktivieren der Debug-Protokollierung an `-debug`, wann Sie das Plug-in ausführen.
+
+
+
+
+== Allgemeine Tipps zur Fehlerbehebung
+
+* Das häufigste Problem, in dem neue Benutzer auftreten, ist eine fehlerhafte Konfiguration, die verhindert, dass das Plugin initialisiert wird. Wenn dies geschieht, werden Sie wahrscheinlich eine Meldung wie diese sehen, wenn Sie versuchen, das Plugin zu installieren oder zu aktivieren:
++
+`Error response from daemon: dial unix /run/docker/plugins/<id>/netapp.sock: connect: no such file or directory`
+
++
+Das bedeutet, dass das Plugin nicht gestartet werden konnte. Zum Glück wurde das Plugin mit einer umfassenden Protokollierungsfunktion aufgebaut, die Ihnen bei der Diagnose der meisten Probleme helfen sollte, die Sie wahrscheinlich auftreten.
+
+* Wenn Probleme bei der Montage eines PV an einem Container auftreten, stellen Sie sicher, dass `rpcbind` installiert und ausgeführt wird. Verwenden Sie den erforderlichen Paketmanager für das Host-Betriebssystem, und überprüfen Sie, ob `rpcbind` ausgeführt wird. Sie können den Status des rpcbind-Dienstes überprüfen, indem Sie einen oder dessen Äquivalent ausführen `systemctl status rpcbind`.
+
