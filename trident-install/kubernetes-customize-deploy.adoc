@@ -118,9 +118,6 @@ Bei Verwendung der Cloud-Identität auf einem AKS-Cluster auf Workload-Identitä
 
 
 | `nodePrep` | Ermöglicht Trident, die Nodes des Kubernetes-Clusters so vorzubereiten, dass Volumes mithilfe des angegebenen Daten-Storage-Protokolls gemanagt werden. *Derzeit `iscsi` wird nur der Wert unterstützt.* |  
-
-
-| `enableAutoBackendConfig` | Ermöglicht die automatische Backend-Konfiguration, die auf der Basis von Eingabeparametern nahtlos Back-End- und Storage-Klassen erstellt. | Kein Standard; optional 
 |===
 
 NOTE: Weitere Informationen zum Formatieren von Pod-Parametern finden Sie unter link:https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/["Pods werden Nodes zugewiesen"^].
