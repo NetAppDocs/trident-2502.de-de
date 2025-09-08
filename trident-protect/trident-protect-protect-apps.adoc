@@ -201,16 +201,17 @@ Vergewissern Sie sich, dass der Ablauf des AWS-Sitzungstokens für alle langwier
 ** *Spec.snapshotRetention*: Die Anzahl der zu behaltenden Snapshots. Null bedeutet, dass keine Snapshots erstellt werden sollen.
 ** *spec.granularity*: die Häufigkeit, mit der der Zeitplan ausgeführt werden soll. Mögliche Werte, zusammen mit den erforderlichen zugeordneten Feldern:
 +
-*** `hourly` (Erfordert, dass Sie angeben `spec.minute`)
-*** `daily` (Erfordert, dass Sie und angeben `spec.minute` `spec.hour`)
-*** `weekly` (Erfordert, dass Sie , und `spec.dayOfWeek` angeben `spec.minute, spec.hour`)
-*** `monthly` (Erfordert, dass Sie , und `spec.dayOfMonth` angeben `spec.minute, spec.hour`)
+*** `Hourly`(erfordert die Angabe `spec.minute` )
+*** `Daily`(erfordert die Angabe `spec.minute` Und `spec.hour` )
+*** `Weekly`(erfordert die Angabe `spec.minute, spec.hour` , Und `spec.dayOfWeek` )
+*** `Monthly`(erfordert die Angabe `spec.minute, spec.hour` , Und `spec.dayOfMonth` )
+*** `Custom`
 
 
-** *Spec.dayOfMonth*: (_Optional_) der Tag des Monats (1 - 31), an dem der Zeitplan ausgeführt werden soll. Dieses Feld ist erforderlich, wenn die Granularität auf eingestellt ist `monthly`.
-** *Spec.dayOfWeek*: (_Optional_) der Wochentag (0 - 7), an dem der Zeitplan ausgeführt werden soll. Werte von 0 oder 7 zeigen Sonntag an. Dieses Feld ist erforderlich, wenn die Granularität auf eingestellt ist `weekly`.
-** *Spec.hour*: (_Optional_) die Stunde des Tages (0 - 23), die der Zeitplan ausführen soll. Dieses Feld ist erforderlich, wenn die Granularität auf , , oder eingestellt ist `daily` `weekly` `monthly`.
-** *Spec.minute*: (_Optional_) die Minute der Stunde (0 - 59), die der Zeitplan ausführen soll. Dieses Feld ist erforderlich, wenn die Granularität auf , , , oder eingestellt ist `hourly` `daily` `weekly` `monthly`.
+** *spec.dayOfMonth*: (_Optional_) Der Tag des Monats (1 – 31), an dem der Zeitplan ausgeführt werden soll. Dieses Feld ist erforderlich, wenn die Granularität auf `Monthly` .
+** *spec.dayOfWeek*: (_Optional_) Der Wochentag (0 - 7), an dem der Zeitplan ausgeführt werden soll. Werte von 0 oder 7 zeigen Sonntag an. Dieses Feld ist erforderlich, wenn die Granularität auf `Weekly` .
+** *spec.hour*: (_Optional_) Die Stunde des Tages (0 - 23), zu der der Zeitplan ausgeführt werden soll. Dieses Feld ist erforderlich, wenn die Granularität auf `Daily` , `Weekly` , oder `Monthly` .
+** *spec.minute*: (_Optional_) Die Minute der Stunde (0 – 59), zu der der Zeitplan ausgeführt werden soll. Dieses Feld ist erforderlich, wenn die Granularität auf `Hourly` , `Daily` , `Weekly` , oder `Monthly` .
 +
 [source, yaml]
 ----
@@ -226,7 +227,7 @@ spec:
   appVaultRef: appvault-name
   backupRetention: "15"
   snapshotRetention: "15"
-  granularity: <monthly>
+  granularity: Monthly
   dayOfMonth: "1"
   dayOfWeek: "0"
   hour: "0"
