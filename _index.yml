@@ -1,5 +1,13 @@
 ---
 indexpage:
+  title: Trident 25.02-Dokumentation
+  summary: Trident ist ein Open-Source-Tool zur Storage-bereitstellung und -Orchestrierung,
+    das von NetApp verwaltet wird. Die Software ermöglicht die Erstellung von Storage
+    Volumes für Container-Applikationen, die von Docker und Kubernetes gemanagt werden.
+    **Lesen Sie die Versionshinweise für wichtige Informationen zum Upgrade auf Trident
+    25.02.**
+  keywords: trident, documentation, trident release notes, get started, deploy, upgrade,
+    use, trident protect, 2502
   lead: Trident ist ein Open-Source-Tool zur Storage-bereitstellung und -Orchestrierung,
     das von NetApp verwaltet wird. Die Software ermöglicht die Erstellung von Storage
     Volumes für Container-Applikationen, die von Docker und Kubernetes gemanagt werden.
@@ -8,8 +16,6 @@ indexpage:
     links:
     - title: Was ist neu
       url: trident-rn.html
-    - title: Frühere Versionen
-      url: "/earlier-versions.html"
   - title: Los geht's
     links:
     - title: Erfahren Sie mehr über Trident
