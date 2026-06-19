@@ -1,6 +1,6 @@
 ---
 sidebar: sidebar 
-permalink: trident-get-started/kubernetes-deploy.html 
+permalink: trident-install/kubernetes-deploy.html 
 keywords: deploy, Trident, methods, operator, tridentctl, helm, tanzu, vmware 
 summary: 'Sie können Trident mit dem Trident-Operator (manuell oder mit Helm) oder mit installieren `tridentctl`. In diesem Thema finden Sie wichtige Informationen zur Auswahl des richtigen Installationsprozesses.' 
 ---
@@ -40,7 +40,7 @@ Die Verwendung einer nicht-Multipathing-Konfiguration oder die Verwendung von `f
 
 Unabhängig von Ihrem Installationspfad müssen Sie Folgendes haben:
 
-* Vollständige Berechtigungen für einen unterstützten Kubernetes-Cluster, auf dem eine unterstützte Version von Kubernetes und aktivierte Funktionsanforderungen ausgeführt werden. Weitere Informationen finden Sie imlink:requirements.html["Anforderungen"].
+* Vollständige Berechtigungen für einen unterstützten Kubernetes-Cluster, auf dem eine unterstützte Kubernetes-Version ausgeführt wird und die erforderlichen Funktionen aktiviert sind. Überprüfen Sie die link:../trident-get-started/requirements.html["Anforderungen"] für Details.
 * Zugriff auf ein unterstütztes NetApp Storage-System.
 * Kann Volumes von allen Kubernetes Worker-Nodes aus mounten
 * Ein Linux-Host mit `kubectl` (oder `oc`, falls Sie OpenShift verwenden) installiert und für das Management des Kubernetes-Clusters konfiguriert, den Sie verwenden möchten.
@@ -55,7 +55,7 @@ TIP: Wenn Sie sich nicht mit dem vertraut gemacht habenlink:../trident-get-start
 
 == Wählen Sie Ihre Installationsmethode
 
-Wählen Sie die für Sie richtige Installationsmethode aus. Sie sollten auch die Überlegungen für durchgehenlink:kubernetes-deploy.html#move-between-installation-methods["Bewegen zwischen Methoden"], bevor Sie Ihre Entscheidung treffen.
+Wählen Sie die für Sie passende Installationsmethode. Sie sollten auch die Überlegungen zu link:kubernetes-deploy.html#moving-between-installation-methods["Bewegen zwischen Methoden"] prüfen, bevor Sie Ihre Entscheidung treffen.
 
 
 
